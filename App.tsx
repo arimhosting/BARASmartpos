@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect, useMemo } from 'react';
@@ -110,7 +111,14 @@ const App: React.FC = () => {
         const userVendor = vendors.find(v => v.id === foundUser.vendorId);
         if (userVendor) {
             setActiveVendor(userVendor);
-            setCurrentView(ViewState.POS);
+            
+            // Redirect based on role
+            if (foundUser.role === 'vendor_admin') {
+               setCurrentView(ViewState.DASHBOARD); // Owner sees dashboard first
+            } else {
+               setCurrentView(ViewState.POS); // Cashier sees POS first
+            }
+            
             handleShowToast(`Selamat datang di ${userVendor.name}, ${foundUser.name}!`, 'success');
         } else {
             handleShowToast('Error: User tidak terhubung ke toko aktif.', 'error');
@@ -427,7 +435,7 @@ const App: React.FC = () => {
             {/* Navigation */}
             <nav className="flex-1 flex flex-col gap-3 w-full px-2">
               
-              {/* Super Admin specific nav */}
+              {/* Super Admin specific nav - ONLY SHOW IF NO VENDOR SELECTED */}
               {user.role === 'super_admin' && !activeVendor && (
                  <SidebarItem 
                    active={currentView === ViewState.VENDORS} 

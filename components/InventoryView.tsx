@@ -160,7 +160,14 @@ export const InventoryView: React.FC<InventoryViewProps> = ({
                 <tr key={product.id} className="hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors">
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-3">
-                      <img src={product.image} alt="" className="w-10 h-10 rounded-lg object-cover bg-gray-200 dark:bg-slate-600" />
+                      <div className="w-10 h-10 rounded-lg overflow-hidden bg-gray-200 dark:bg-slate-600 border border-gray-100 dark:border-slate-600">
+                         <img 
+                           src={product.image} 
+                           alt="" 
+                           className="w-full h-full object-cover" 
+                           onError={(e) => { (e.target as HTMLImageElement).src = '' }} 
+                         />
+                      </div>
                       <div>
                         <div className="font-medium text-gray-900 dark:text-white">{product.name}</div>
                         <div className="text-xs text-gray-500 dark:text-gray-400 truncate max-w-[200px]">{product.description}</div>
@@ -272,30 +279,37 @@ export const InventoryView: React.FC<InventoryViewProps> = ({
                 {/* Right Side: Image Preview & URL */}
                 <div className="space-y-2">
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Foto Produk</label>
+                  
+                  {/* Aspect Square + Object Cover for Consistency */}
                   <div className="w-full aspect-square bg-gray-100 dark:bg-slate-700 rounded-xl border-2 border-dashed border-gray-300 dark:border-slate-600 overflow-hidden flex flex-col items-center justify-center relative group">
                     {formData.image ? (
-                      <img src={formData.image} alt="Preview" className="w-full h-full object-cover" onError={(e) => { (e.target as HTMLImageElement).src = '' }} />
+                      <img 
+                        src={formData.image} 
+                        alt="Preview" 
+                        className="w-full h-full object-cover" 
+                        onError={(e) => { (e.target as HTMLImageElement).src = '' }} 
+                      />
                     ) : (
                       <div className="text-center text-gray-400">
                         <ImageIcon className="w-12 h-12 mx-auto mb-2 opacity-50" />
-                        <span className="text-xs">Preview Gambar</span>
+                        <span className="text-xs">Preview Gambar (1:1)</span>
                       </div>
                     )}
                     
                     {/* Overlay Upload Button */}
                     <label className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
-                       <span className="text-white bg-black/50 px-3 py-1.5 rounded-lg text-sm flex items-center gap-2">
-                         <Upload size={14} /> Upload Baru
+                       <span className="text-white bg-black/50 px-3 py-1.5 rounded-lg text-sm flex items-center gap-2 backdrop-blur-sm">
+                         <Upload size={14} /> Upload Foto
                        </span>
                        <input type="file" className="hidden" accept="image/*" onChange={handleImageUpload} />
                     </label>
                   </div>
                   
                   <div className="text-xs text-center text-gray-500 dark:text-gray-400">
-                    atau tempel URL gambar
+                    Disarankan rasio 1:1 (Persegi)
                   </div>
                   <Input 
-                    placeholder="Paste URL Gambar disini..."
+                    placeholder="Atau tempel URL gambar..."
                     value={formData.image} 
                     onChange={e => setFormData({...formData, image: e.target.value})} 
                   />

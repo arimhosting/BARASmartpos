@@ -325,7 +325,7 @@ export const POSView: React.FC<POSViewProps> = ({
                   onClick={() => onAddToCart(product)}
                   className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700 overflow-hidden cursor-pointer hover:shadow-lg hover:-translate-y-1 transition-all duration-300 group"
                 >
-                  <div className={`h-36 w-full overflow-hidden relative ${product.color || 'bg-gray-200 dark:bg-slate-700'}`}>
+                  <div className={`h-40 w-full overflow-hidden relative ${product.color || 'bg-gray-200 dark:bg-slate-700'}`}>
                     <img 
                         src={product.image} 
                         alt={product.name}
@@ -741,13 +741,19 @@ export const POSView: React.FC<POSViewProps> = ({
                         </div>
 
                         {/* Action Buttons */}
-                        <button 
-                          onClick={() => handleLoadSavedOrder(order)}
-                          className="w-full py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-semibold flex items-center justify-center gap-2 transition-colors shadow-sm"
-                        >
-                          <span>Lanjutkan / Bayar</span>
-                          <ChevronRight size={16} />
-                        </button>
+                        <div className="flex gap-2">
+                            <button 
+                              onClick={() => {
+                                // Simple remove logic for saved order if needed, but primarily used for load
+                                // Here we just load
+                                handleLoadSavedOrder(order);
+                              }}
+                              className="flex-1 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-semibold flex items-center justify-center gap-2 transition-colors shadow-sm"
+                            >
+                              <span>Lanjutkan / Bayar</span>
+                              <ChevronRight size={16} />
+                            </button>
+                        </div>
                       </div>
                     );
                  })
