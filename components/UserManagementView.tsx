@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { User, ViewProps, UserRole } from '../types';
 import { Button, Input, Select } from './UIComponents';
@@ -9,9 +8,10 @@ interface UserManagementViewProps extends ViewProps {
   onAddUser: (user: User) => void;
   onUpdateUser: (user: User) => void;
   onDeleteUser: (username: string) => void;
+  currentUser?: User | null; // Added prop
 }
 
-export const UserManagementView: React.FC<UserManagementViewProps> = ({ users, onAddUser, onUpdateUser, onDeleteUser, onShowToast }) => {
+export const UserManagementView: React.FC<UserManagementViewProps> = ({ users, onAddUser, onUpdateUser, onDeleteUser, onShowToast, currentUser }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingUser, setEditingUser] = useState<User | null>(null);
   const [search, setSearch] = useState('');
@@ -106,37 +106,54 @@ export const UserManagementView: React.FC<UserManagementViewProps> = ({ users, o
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100 dark:divide-slate-700">
-              {filteredUsers.map(user => (
-                <tr key={user.username} className="hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors">
-                  <td className="px-6 py-4">
-                    <div className="flex items-center gap-3">
-                      <div className={`w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-bold ${user.role === 'vendor_admin' ? 'bg-purple-600' : 'bg-blue-600'}`}>
-                        {user.name.charAt(0).toUpperCase()}
+              {filteredUsers.map(user => {
+                // Determine if this row is the current user
+                const isSelf = user.username === currentUser?.username;
+                
+                return (
+                  <tr key={user.username} className="hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors">
+                    <td className="px-6 py-4">
+                      <div className="flex items-center gap-3">
+                        <div className={`w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-bold ${user.role === 'vendor_admin' ? 'bg-purple-600' : 'bg-blue-600'}`}>
+                          {user.name.charAt(0).toUpperCase()}
+                        </div>
+                        <div className="font-medium text-gray-900 dark:text-white">
+                            {user.name}
+                            {isSelf && <span className="ml-2 text-[10px] bg-green-100 text-green-700 px-1.5 py-0.5 rounded-full dark:bg-green-900 dark:text-green-300">(Saya)</span>}
+                        </div>
                       </div>
-                      <div className="font-medium text-gray-900 dark:text-white">{user.name}</div>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-300 font-mono">
-                    {user.username}
-                  </td>
-                  <td className="px-6 py-4">
-                    <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium ${
-                      user.role === 'vendor_admin' ? 'bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-300' : 'bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300'
-                    }`}>
-                      {user.role === 'vendor_admin' ? <ShieldAlert size={12}/> : <Shield size={12}/>}
-                      {user.role === 'vendor_admin' ? 'Administrator' : 'Kasir'}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 text-right space-x-2">
-                    <button onClick={() => openEditModal(user)} className="p-2 hover:bg-blue-50 dark:hover:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded transition-colors"><Edit2 size={16} /></button>
-                    {user.username !== 'admin' && user.username !== 'superadmin' && (
-                       <button onClick={() => onDeleteUser(user.username)} className="p-2 hover:bg-red-50 dark:hover:bg-red-900/30 text-red-600 dark:text-red-400 rounded transition-colors"><Trash2 size={16} /></button>
-                    )}
-                  </td>
-                </tr>
-              ))}
+                    </td>
+                    <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-300 font-mono">
+                      {user.username}
+                    </td>
+                    <td className="px-6 py-4">
+                      <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium ${
+                        user.role === 'vendor_admin' ? 'bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-300' : 'bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300'
+                      }`}>
+                        {user.role === 'vendor_admin' ? <ShieldAlert size={12}/> : <Shield size={12}/>}
+                        {user.role === 'vendor_admin' ? 'Administrator' : 'Kasir'}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 text-right space-x-2">
+                      <button onClick={() => openEditModal(user)} className="p-2 hover:bg-blue-50 dark:hover:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded transition-colors" title="Edit User">
+                        <Edit2 size={16} />
+                      </button>
+                      
+                      {/* Only allow deletion if NOT self */}
+                      {!isSelf && (
+                         <button onClick={() => onDeleteUser(user.username)} className="p-2 hover:bg-red-50 dark:hover:bg-red-900/30 text-red-600 dark:text-red-400 rounded transition-colors" title="Hapus User">
+                            <Trash2 size={16} />
+                         </button>
+                      )}
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
+          {filteredUsers.length === 0 && (
+             <div className="p-8 text-center text-gray-500 dark:text-gray-400">Tidak ada pengguna yang ditemukan.</div>
+          )}
         </div>
       </div>
 

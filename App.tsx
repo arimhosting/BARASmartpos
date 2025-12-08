@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useEffect, useMemo } from 'react';
@@ -74,16 +73,43 @@ const App: React.FC = () => {
      return ['Umum'];
   }, [categoryMap, targetVendorId]);
   
-  // Filter users based on vendor (Super Admin sees all or vendor specific?)
-  // For User Management View: If Super Admin, sees all. If Vendor Admin, sees only their staff.
+  // Filter users based on vendor and role restrictions
   const visibleUsers = useMemo(() => {
+    // 1. Filter by Vendor Context first
+    let filteredByVendor = users;
+    
     if (user?.role === 'super_admin') {
-        // Super admin sees everyone, or maybe filter by activeVendor if viewing a specific shop? 
-        // Let's say Super Admin manages all users globally for simplicity in this view.
-        return users; 
+       if (activeVendor) {
+          // Super admin inside a vendor view -> see all users of that vendor
+          filteredByVendor = users.filter(u => u.vendorId === activeVendor.id);
+       } else {
+          // Super admin global view -> see all users (usually)
+          return users;
+       }
+    } else {
+       // Normal users only see users in their own vendor
+       filteredByVendor = users.filter(u => u.vendorId === targetVendorId);
     }
-    return users.filter(u => u.vendorId === targetVendorId);
-  }, [users, user, targetVendorId]);
+
+    // 2. Apply Role-based Visibility Rules
+    return filteredByVendor.filter(u => {
+        // Super Admin sees everyone
+        if (user?.role === 'super_admin') return true;
+
+        // Vendor Admin sees:
+        // - Themselves
+        // - Cashiers (Staff)
+        // - HIDDEN: Other Admins (to prevent accidental edits of partners/owners unless specifically desired)
+        if (user?.role === 'vendor_admin') {
+            if (u.username === user.username) return true; // Show Self
+            if (u.role === 'cashier') return true; // Show Staff
+            return false; // Hide other admins/roles
+        }
+
+        // Cashiers shouldn't access this view, but if they do, only see self
+        return u.username === user?.username;
+    });
+  }, [users, user, targetVendorId, activeVendor]);
 
 
   // --- Toast Handlers ---
@@ -615,6 +641,7 @@ const App: React.FC = () => {
                       onDeleteUser={handleDeleteUser}
                       onShowToast={handleShowToast}
                       categories={vendorCategories}
+                      currentUser={user}
                     />
                   )}
                   {currentView === ViewState.CUSTOMERS && (
