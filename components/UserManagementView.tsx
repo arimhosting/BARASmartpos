@@ -110,7 +110,7 @@ export const UserManagementView: React.FC<UserManagementViewProps> = ({ users, o
                 <tr key={user.username} className="hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors">
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-3">
-                      <div className={`w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-bold ${user.role === 'admin' ? 'bg-purple-600' : 'bg-blue-600'}`}>
+                      <div className={`w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-bold ${user.role === 'vendor_admin' ? 'bg-purple-600' : 'bg-blue-600'}`}>
                         {user.name.charAt(0).toUpperCase()}
                       </div>
                       <div className="font-medium text-gray-900 dark:text-white">{user.name}</div>
@@ -121,15 +121,15 @@ export const UserManagementView: React.FC<UserManagementViewProps> = ({ users, o
                   </td>
                   <td className="px-6 py-4">
                     <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium ${
-                      user.role === 'admin' ? 'bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-300' : 'bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300'
+                      user.role === 'vendor_admin' ? 'bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-300' : 'bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300'
                     }`}>
-                      {user.role === 'admin' ? <ShieldAlert size={12}/> : <Shield size={12}/>}
-                      {user.role === 'admin' ? 'Administrator' : 'Kasir'}
+                      {user.role === 'vendor_admin' ? <ShieldAlert size={12}/> : <Shield size={12}/>}
+                      {user.role === 'vendor_admin' ? 'Administrator' : 'Kasir'}
                     </span>
                   </td>
                   <td className="px-6 py-4 text-right space-x-2">
                     <button onClick={() => openEditModal(user)} className="p-2 hover:bg-blue-50 dark:hover:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded transition-colors"><Edit2 size={16} /></button>
-                    {user.username !== 'admin' && (
+                    {user.username !== 'admin' && user.username !== 'superadmin' && (
                        <button onClick={() => onDeleteUser(user.username)} className="p-2 hover:bg-red-50 dark:hover:bg-red-900/30 text-red-600 dark:text-red-400 rounded transition-colors"><Trash2 size={16} /></button>
                     )}
                   </td>
@@ -172,7 +172,7 @@ export const UserManagementView: React.FC<UserManagementViewProps> = ({ users, o
                 onChange={e => setFormData({...formData, role: e.target.value as UserRole})}
                 options={[
                   { value: 'cashier', label: 'Kasir (POS Only)' },
-                  { value: 'admin', label: 'Administrator (Full Access)' }
+                  { value: 'vendor_admin', label: 'Vendor Admin (Full Access)' }
                 ]}
               />
             </div>

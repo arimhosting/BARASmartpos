@@ -1,3 +1,4 @@
+'use client';
 
 import React, { useState, useEffect, useMemo } from 'react';
 import { ViewState, Product, Transaction, CartItem, SavedOrder, UserRole, User, OrderType, ToastMessage, ToastType, Customer, Promotion, Vendor } from './types';
