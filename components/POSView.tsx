@@ -389,10 +389,17 @@ export const POSView: React.FC<POSViewProps> = ({
                   </div>
 
                   {/* Price & Action */}
-                  <div className="text-right pl-4 border-l border-gray-100 dark:border-slate-700 flex items-center gap-4">
+                  <div className="text-right pl-4 border-l border-gray-100 dark:border-slate-700 flex items-center gap-4 ml-auto">
                     <span className="font-bold text-blue-600 dark:text-blue-400 whitespace-nowrap">{formatRupiah(product.price)}</span>
-                    <button className="w-8 h-8 rounded-full bg-blue-50 dark:bg-slate-700 text-blue-600 dark:text-blue-400 flex items-center justify-center hover:bg-blue-600 hover:text-white transition-colors">
-                      <Plus size={16} />
+                    <button 
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onAddToCart(product);
+                      }}
+                      className="w-9 h-9 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 flex items-center justify-center hover:bg-blue-600 hover:text-white transition-all shadow-sm"
+                      title="Tambah ke Keranjang"
+                    >
+                      <Plus size={18} />
                     </button>
                   </div>
                 </div>

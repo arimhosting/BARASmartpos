@@ -1,15 +1,16 @@
 
 import React, { useState } from 'react';
 import { UserRole, ToastType, User as AppUser } from '../types';
-import { Lock, User, ChevronRight, Store } from 'lucide-react';
+import { Lock, User, ChevronRight, Store, ArrowLeft } from 'lucide-react';
 
 interface LoginViewProps {
   onLogin: (role: UserRole, username: string) => void;
   onShowToast: (message: string, type: ToastType) => void;
   users: AppUser[];
+  onBack?: () => void; // New prop to go back to landing page
 }
 
-export const LoginView: React.FC<LoginViewProps> = ({ onLogin, onShowToast, users }) => {
+export const LoginView: React.FC<LoginViewProps> = ({ onLogin, onShowToast, users, onBack }) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -40,7 +41,19 @@ export const LoginView: React.FC<LoginViewProps> = ({ onLogin, onShowToast, user
     <div className="min-h-screen bg-gradient-to-br from-slate-900 to-indigo-900 flex items-center justify-center p-4">
       <div className="bg-white w-full max-w-md rounded-2xl shadow-2xl overflow-hidden flex flex-col animate-fade-in relative">
         <div className="absolute top-0 w-full h-2 bg-gradient-to-r from-blue-500 to-purple-600"></div>
-        <div className="p-8 pb-6 text-center border-b border-gray-100">
+        
+        {/* Back Button */}
+        {onBack && (
+          <button 
+            onClick={onBack}
+            className="absolute top-4 left-4 p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-full transition-colors z-10"
+            title="Kembali ke Beranda"
+          >
+            <ArrowLeft size={20} />
+          </button>
+        )}
+
+        <div className="p-8 pb-6 text-center border-b border-gray-100 pt-10">
           <div className="w-16 h-16 bg-blue-600 rounded-2xl mx-auto flex items-center justify-center text-white font-bold text-3xl shadow-lg mb-4">
             B
           </div>

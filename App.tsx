@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect, useMemo } from 'react';
@@ -11,6 +12,7 @@ import { UserManagementView } from './components/UserManagementView';
 import { CustomerView } from './components/CustomerView';
 import { PromoView } from './components/PromoView';
 import { VendorManagementView } from './components/VendorManagementView';
+import { LandingView } from './components/LandingView';
 import { LayoutGrid, ShoppingCart, Package, LogOut, Users, Settings, Tag, Moon, Sun, Store, ChevronLeft } from 'lucide-react';
 import { ToastContainer } from './components/UIComponents';
 
@@ -21,6 +23,7 @@ const App: React.FC = () => {
   // Auth State
   const [user, setUser] = useState<User | null>(null);
   const [users, setUsers] = useState<User[]>(INITIAL_USERS);
+  const [showLoginScreen, setShowLoginScreen] = useState(false); // Controls Landing vs Login view
 
   // Vendor State (Multi-Tenancy)
   const [vendors, setVendors] = useState<Vendor[]>(INITIAL_VENDORS);
@@ -127,6 +130,7 @@ const App: React.FC = () => {
     const foundUser = users.find(u => u.username === username);
     if (foundUser) {
       setUser(foundUser);
+      setShowLoginScreen(false); // Reset this state
       
       if (foundUser.role === 'super_admin') {
         setCurrentView(ViewState.VENDORS);
@@ -160,6 +164,7 @@ const App: React.FC = () => {
     setCart([]);
     setCustomerName('');
     setSelectedCustomer(null);
+    setShowLoginScreen(false); // Go back to Landing Page
     handleShowToast('Anda telah keluar.', 'info');
   };
 
@@ -442,7 +447,20 @@ const App: React.FC = () => {
       <ToastContainer toasts={toasts} removeToast={handleRemoveToast} />
       
       {!user ? (
-        <LoginView onLogin={handleLogin} onShowToast={handleShowToast} users={users} />
+        showLoginScreen ? (
+          <LoginView 
+            onLogin={handleLogin} 
+            onShowToast={handleShowToast} 
+            users={users} 
+            onBack={() => setShowLoginScreen(false)} 
+          />
+        ) : (
+          <LandingView 
+            vendors={vendors} 
+            products={products} 
+            onLoginClick={() => setShowLoginScreen(true)} 
+          />
+        )
       ) : (
         <div className="flex h-screen w-full bg-gray-100 dark:bg-slate-900 font-sans transition-colors duration-200">
           

@@ -23,6 +23,9 @@ export const PromoView: React.FC<PromoViewProps> = ({ promotions, products, onAd
   
   const [applyToAll, setApplyToAll] = useState(true);
   const [selectedProductIds, setSelectedProductIds] = useState<Set<string>>(new Set());
+  
+  // Product Search State
+  const [productSearchQuery, setProductSearchQuery] = useState('');
 
   const handleOpenModal = () => {
     setFormData({
@@ -30,6 +33,7 @@ export const PromoView: React.FC<PromoViewProps> = ({ promotions, products, onAd
     });
     setApplyToAll(true);
     setSelectedProductIds(new Set());
+    setProductSearchQuery(''); // Reset search
     setIsModalOpen(true);
   }
 
@@ -69,6 +73,10 @@ export const PromoView: React.FC<PromoViewProps> = ({ promotions, products, onAd
     onAddPromo(newPromo);
     setIsModalOpen(false);
   };
+
+  const filteredProducts = products.filter(p => 
+    p.name.toLowerCase().includes(productSearchQuery.toLowerCase())
+  );
 
   return (
     <div className="p-8 h-full overflow-y-auto bg-gray-50 dark:bg-slate-900">
@@ -194,17 +202,41 @@ export const PromoView: React.FC<PromoViewProps> = ({ promotions, products, onAd
                   </div>
 
                   {!applyToAll && (
-                      <div className="border border-gray-200 dark:border-slate-600 rounded-lg max-h-40 overflow-y-auto p-2 bg-gray-50 dark:bg-slate-700">
-                          {products.map(p => (
-                              <div key={p.id} onClick={() => toggleProductSelection(p.id)} className="flex items-center gap-2 p-2 hover:bg-gray-100 dark:hover:bg-slate-600 rounded cursor-pointer">
-                                  {selectedProductIds.has(p.id) ? (
-                                      <CheckSquare size={18} className="text-blue-600 dark:text-blue-400" />
-                                  ) : (
-                                      <Square size={18} className="text-gray-400" />
-                                  )}
-                                  <span className="text-sm dark:text-gray-200 truncate">{p.name}</span>
-                              </div>
-                          ))}
+                      <div className="space-y-2">
+                        {/* Search Input for Products */}
+                        <div className="relative">
+                           <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
+                           <input 
+                             type="text" 
+                             placeholder="Cari produk..." 
+                             value={productSearchQuery}
+                             onChange={e => setProductSearchQuery(e.target.value)}
+                             className="w-full pl-9 pr-3 py-2 text-sm border border-gray-300 dark:border-slate-600 rounded-lg bg-gray-50 dark:bg-slate-700 dark:text-white outline-none focus:ring-1 focus:ring-blue-500"
+                           />
+                        </div>
+
+                        {/* List */}
+                        <div className="border border-gray-200 dark:border-slate-600 rounded-lg max-h-40 overflow-y-auto p-2 bg-gray-50 dark:bg-slate-700">
+                            {filteredProducts.length > 0 ? (
+                              filteredProducts.map(p => (
+                                  <div key={p.id} onClick={() => toggleProductSelection(p.id)} className="flex items-center gap-2 p-2 hover:bg-gray-100 dark:hover:bg-slate-600 rounded cursor-pointer">
+                                      {selectedProductIds.has(p.id) ? (
+                                          <CheckSquare size={18} className="text-blue-600 dark:text-blue-400 flex-shrink-0" />
+                                      ) : (
+                                          <Square size={18} className="text-gray-400 flex-shrink-0" />
+                                      )}
+                                      <span className="text-sm dark:text-gray-200 truncate">{p.name}</span>
+                                  </div>
+                              ))
+                            ) : (
+                               <div className="p-4 text-center text-xs text-gray-500 dark:text-gray-400">
+                                  Produk tidak ditemukan.
+                               </div>
+                            )}
+                        </div>
+                        <div className="text-xs text-gray-500 dark:text-gray-400 text-right">
+                           {selectedProductIds.size} produk dipilih
+                        </div>
                       </div>
                   )}
               </div>
